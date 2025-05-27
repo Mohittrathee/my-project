@@ -1,0 +1,41 @@
+<html>
+<head>
+  <title>Chatbot</title>
+</head>
+<body>
+  <h2>Chatbot</h2>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+   async function sendMessage() {
+    const userInput = document.getElementById("userInput").value;
+    document.getElementById("chatbox").innerHTML += `<p><b>You:</b> ${userInput}</p>`;
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput })
+      });
+
+      const data = await res.json();
+
+      if (data.response) {
+        document.getElementById("chatbox").innerHTML += `<p><b>Bot:</b> ${data.response}</p>`;
+      } else if (data.error) {
+        document.getElementById("chatbox").innerHTML += `<p><b>Error:</b> ${data.error}</p>`;
+      } else {
+        document.getElementById("chatbox").innerHTML += `<p><b>Bot:</b> (No response received)</p>`;
+      }
+
+    } catch (error) {
+      document.getElementById("chatbox").innerHTML += `<p><b>Error:</b> ${error.message}</p>`;
+    }
+
+    document.getElementById("userInput").value = "";
+  }
+  </script>
+</body>
+</html>
